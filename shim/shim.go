@@ -73,7 +73,6 @@ func Start(cc Chaincode) error {
 	}
 
 	err = chaincodeAsClientChat(chaincodename, stream, cc)
-
 	return err
 }
 

@@ -4,7 +4,6 @@
 package shim
 
 import (
-	"crypto/tls"
 	"errors"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim/internal"
@@ -56,7 +55,7 @@ func (cs *ChaincodeServer) Start() error {
 		return errors.New("chaincode must be specified")
 	}
 
-	var tlsCfg *tls.Config
+	var tlsCfg interface{}
 	var err error
 	if !cs.TLSProps.Disabled {
 		tlsCfg, err = internal.LoadTLSConfig(true, cs.TLSProps.Key, cs.TLSProps.Cert, cs.TLSProps.ClientCACerts)

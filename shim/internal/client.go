@@ -6,6 +6,8 @@ package internal
 import (
 	"context"
 	"crypto/tls"
+	"github.com/tjfoc/gmtls"
+	"github.com/tjfoc/gmtls/gmcredentials"
 	"time"
 
 	peerpb "github.com/hyperledger/fabric-protos-go/peer"
@@ -23,7 +25,7 @@ const (
 // NewClientConn ...
 func NewClientConn(
 	address string,
-	tlsConf *tls.Config,
+	tlsConf interface{},
 	kaOpts keepalive.ClientParameters,
 ) (*grpc.ClientConn, error) {
 
@@ -38,8 +40,16 @@ func NewClientConn(
 	}
 
 	if tlsConf != nil {
-		creds := credentials.NewTLS(tlsConf)
-		dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+		switch tlsConf.(type) {
+		case *tls.Config:
+			creds := credentials.NewTLS(tlsConf.(*tls.Config))
+			dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+		case *gmtls.Config:
+			creds := gmcredentials.NewTLS(tlsConf.(*gmtls.Config))
+			dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+		default:
+			panic("unSupport tlsConfig type")
+		}
 	} else {
 		dialOpts = append(dialOpts, grpc.WithInsecure())
 	}
