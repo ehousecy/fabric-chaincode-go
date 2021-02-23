@@ -6,12 +6,12 @@
 package attrmgr
 
 import (
-	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Hyperledger-TWGC/ccs-gm/x509"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-protos-go/msp"
@@ -228,6 +228,7 @@ func isAttrOID(oid asn1.ObjectIdentifier) bool {
 	}
 	for idx, val := range oid {
 		if val != AttrOID[idx] {
+			fmt.Printf("UnMatched oid %s vs %s",oid, AttrOID[idx])
 			return false
 		}
 	}

@@ -4,14 +4,11 @@
 package internal
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/base64"
-	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/tjfoc/gmsm/sm2"
-	"github.com/tjfoc/gmtls"
+	"github.com/Hyperledger-TWGC/ccs-gm/tls"
+	x509GM "github.com/Hyperledger-TWGC/ccs-gm/x509"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -113,88 +110,42 @@ func LoadTLSConfig(isserver bool, key, cert, root []byte) (interface{}, error) {
 	if !isserver && root == nil {
 		return nil, fmt.Errorf("root cert not provided")
 	}
-	if IsSM2Certificate(cert){
-		cccert, err := gmtls.X509KeyPair(cert, key)
-		if err != nil {
-			return nil, errors.New("failed to parse client key pair")
-		}
-
-		var rootCertPool *sm2.CertPool
-		if root != nil {
-			rootCertPool = sm2.NewCertPool()
-			if ok := rootCertPool.AppendCertsFromPEM(root); !ok {
-				return nil, errors.New("failed to load root cert file")
-			}
-		}
-
-		tlscfg := &gmtls.Config{
-			MinVersion:   gmtls.VersionTLS12,
-			Certificates: []gmtls.Certificate{cccert},
-		}
-
-		//follow Peer's server default config properties
-		if isserver {
-			tlscfg.ClientCAs = rootCertPool
-			tlscfg.SessionTicketsDisabled = true
-			tlscfg.CipherSuites = []uint16{gmtls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-				gmtls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-				gmtls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-				gmtls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-				gmtls.TLS_RSA_WITH_AES_128_GCM_SHA256,
-				gmtls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			}
-			if rootCertPool != nil {
-				tlscfg.ClientAuth = gmtls.RequireAndVerifyClientCert
-			}
-		} else {
-			tlscfg.RootCAs = rootCertPool
-		}
-		return tlscfg, nil
-	}else{
-		cccert, err := tls.X509KeyPair(cert, key)
-		if err != nil {
-			return nil, errors.New("failed to parse client key pair")
-		}
-		var rootCertPool *x509.CertPool
-		if root != nil {
-			rootCertPool = x509.NewCertPool()
-			if ok := rootCertPool.AppendCertsFromPEM(root); !ok {
-				return nil, errors.New("failed to load root cert file")
-			}
-		}
-
-		tlscfg := &tls.Config{
-			MinVersion:   tls.VersionTLS12,
-			Certificates: []tls.Certificate{cccert},
-		}
-
-		//follow Peer's server default config properties
-		if isserver {
-			tlscfg.ClientCAs = rootCertPool
-			tlscfg.SessionTicketsDisabled = true
-			tlscfg.CipherSuites = []uint16{tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-				tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
-				tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			}
-			if rootCertPool != nil {
-				tlscfg.ClientAuth = tls.RequireAndVerifyClientCert
-			}
-		} else {
-			tlscfg.RootCAs = rootCertPool
-		}
-		return tlscfg, nil
+	cccert, err := tls.X509KeyPair(cert, key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse client key pair %s",err)
 	}
-}
 
-func IsSM2Certificate (pemCert []byte) bool {
-	var block *pem.Block
-	block,_ = pem.Decode(pemCert)
-	cert, err := sm2.ParseCertificate(block.Bytes)
-	if err == nil {
-		return cert.SignatureAlgorithm == sm2.SM2WithSM3
+	var rootCertPool *x509GM.CertPool
+	if root != nil {
+		rootCertPool = x509GM.NewCertPool()
+		if ok := rootCertPool.AppendCertsFromPEM(root); !ok {
+			return nil, errors.New("failed to load root cert file")
+		}
 	}
-	return false
+
+	tlscfg := &tls.Config{
+		MinVersion:   tls.VersionTLS12,
+		Certificates: []tls.Certificate{cccert},
+	}
+
+	//follow Peer's server default config properties
+	if isserver {
+		tlscfg.ClientCAs = rootCertPool
+		tlscfg.SessionTicketsDisabled = true
+		tlscfg.CipherSuites = []uint16{tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+			tls.GMTLS_SM2_WITH_SM4_SM3,
+			tls.GMTLS_ECDHE_SM2_WITH_SM4_SM3,
+		}
+		if rootCertPool != nil {
+			tlscfg.ClientAuth = tls.RequireAndVerifyClientCert
+		}
+	} else {
+		tlscfg.RootCAs = rootCertPool
+	}
+	return tlscfg, nil
 }

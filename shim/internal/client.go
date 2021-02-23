@@ -6,8 +6,8 @@ package internal
 import (
 	"context"
 	"crypto/tls"
-	"github.com/tjfoc/gmtls"
-	"github.com/tjfoc/gmtls/gmcredentials"
+	gmtls "github.com/Hyperledger-TWGC/ccs-gm/tls"
+	"github.com/hyperledger/fabric-chaincode-go/shim/gmcredentials"
 	"time"
 
 	peerpb "github.com/hyperledger/fabric-protos-go/peer"
@@ -48,7 +48,7 @@ func NewClientConn(
 			creds := gmcredentials.NewTLS(tlsConf.(*gmtls.Config))
 			dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
 		default:
-			panic("unSupport tlsConfig type")
+			panic("UnSupport tlsConfig type")
 		}
 	} else {
 		dialOpts = append(dialOpts, grpc.WithInsecure())

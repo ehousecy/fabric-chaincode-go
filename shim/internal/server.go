@@ -6,8 +6,8 @@ package internal
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/tjfoc/gmtls"
-	"github.com/tjfoc/gmtls/gmcredentials"
+	gmtls "github.com/Hyperledger-TWGC/ccs-gm/tls"
+	"github.com/hyperledger/fabric-chaincode-go/shim/gmcredentials"
 	"google.golang.org/grpc/credentials"
 	"net"
 	"time"
@@ -86,7 +86,7 @@ func NewServer(
 		case *gmtls.Config:
 			serverOpts = append(serverOpts, grpc.Creds(gmcredentials.NewTLS(tlsConf.(*gmtls.Config))))
 		default:
-			panic("unSupport tlsConfig type")
+			panic("UnSupport tlsConfig type")
 		}
 	}
 
