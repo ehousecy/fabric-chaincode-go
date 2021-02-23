@@ -12,14 +12,14 @@
 
 ## 使用方法
 
-####### 修改智能合约依赖
+###### 1. 首先通过命令获取fabric-chaincode-go版本号
 ```
-# 1 修改合约go.mod
-# 1.1 首先通过命令获取fabric-chaincode-go版本号
 go get github.com/ehousecy/fabric-chaincode-go@ccs-gm
-# 1.2 go.mod添加replace
+```
+###### 2. 修改合约go.mod，添加replace如下
+```
 replace (
-	github.com/hyperledger/fabric-chaincode-go => github.com/ehousecy/fabric-chaincode-go v0.0.0-20210122024824-3b16b5f9d519
+	github.com/hyperledger/fabric-chaincode-go => github.com/ehousecy/fabric-chaincode-go v0.0.0-20210223060054-45621447fc36
 )
 ```
 
