@@ -1,4 +1,4 @@
-# github.com/Hyperledger-TWGC/ccs-gm v0.1.1 => github.com/ehousecy/ccs-gm v0.1.2-0.20210222080840-906b77c76677
+# github.com/Hyperledger-TWGC/ccs-gm v0.1.1 => github.com/ehousecy/ccs-gm v0.1.2-0.20210226013248-cc995c360aed
 github.com/Hyperledger-TWGC/ccs-gm/sm2
 github.com/Hyperledger-TWGC/ccs-gm/sm3
 github.com/Hyperledger-TWGC/ccs-gm/sm4

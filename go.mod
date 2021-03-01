@@ -2,7 +2,7 @@ module github.com/hyperledger/fabric-chaincode-go
 
 go 1.12
 
-replace github.com/Hyperledger-TWGC/ccs-gm => github.com/ehousecy/ccs-gm v0.1.2-0.20210222080840-906b77c76677
+replace github.com/Hyperledger-TWGC/ccs-gm => github.com/ehousecy/ccs-gm v0.1.2-0.20210226013248-cc995c360aed
 
 require (
 	github.com/Hyperledger-TWGC/ccs-gm v0.1.1
